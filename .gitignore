@@ -1,4 +1,5 @@
 *.zip
-./__pycache__
+__pycache__
 client_secrets.json
 fb_client_secrets.json
+*.pyc
