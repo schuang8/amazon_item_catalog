@@ -1,0 +1,4 @@
+*.zip
+./__pycache__
+client_secrets.json
+fb_client_secrets.json

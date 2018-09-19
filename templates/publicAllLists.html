@@ -1,0 +1,50 @@
+{% extends "main.html" %}
+{% block content %}
+	<div class="row top-item">
+		<div class="col-md-10"></div>
+		<div class="col-md-2 text-right">
+			<a href="{{url_for('showLogin')}}">Click Here to Login </a>
+		</div>
+	</div>
+	<div class="row divider blue">
+		<div class="col-md-12"></div>
+	</div>
+	<h1 class="main-page-center">Amazon Catalog</h1>
+	<a href="https://www.amazon.com/Prime-Day/b?ie=UTF8&node=13887280011" target="_blank">
+		<div class="row banner main">
+			<div class="col-md-1"></div>
+			<div class="col-md-11 padding-none"></div>
+		</div>
+	</a>
+
+	<div class = 'flash'>
+		      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+          
+        <ul>
+        {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    {% endwith %}
+
+</div>
+
+
+	
+	<div class="row padding-top padding-bottom">
+		<div class="col-md-1"></div>
+		<div class="col-md-10 padding-none">
+			
+		</div>
+		<div class="col-md-1"></div>
+	</div>
+	{% for list in watch_list %}
+		<div class="row-list">
+			<a href = "{{url_for('showWatchList', watch_list_id = list.id)}}">
+				<div class="col-md-10 watch-list">{{list.name}}</div>
+			</a>
+		</div>
+	{% endfor %}
+{% endblock %}

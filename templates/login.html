@@ -1,0 +1,142 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<head>
+
+    <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+  </script>
+
+  <script src="//apis.google.com/js/platform.js?onload=start"></script>
+
+<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
+
+</head>
+
+<body>
+
+<div class="login-block">
+  <div class="login-title">Login | Register</div>
+  <!-- GOOGLE PLUS SIGN IN-->
+  <div id="signinButton">
+    <span class="g-signin"
+          data-scope="openid email"
+          data-clientid="255698250619-fpliujldhuelhfmh4uhqh793lvqg71fl.apps.googleusercontent.com"
+          data-redirecturi="postmessage"
+          data-accesstype="offline"
+          data-cookiepolicy="single_host_origin"
+          data-callback="signInCallback"
+          data-approvalprompt="force">
+    </span>
+  </div>
+  <div id="result"></div>
+
+  <script>
+  function signInCallback(authResult) {
+    if (authResult['code']) {
+
+      // Hide the sign-in button now that the user is authorized
+      $('#signinButton').attr('style', 'display: none');
+
+      // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main watch lists page
+      $.ajax({
+        type: 'POST',
+        url: '/gconnect?state={{STATE}}',
+        processData: false,
+        data: authResult['code'],
+        contentType: 'application/octet-stream; charset=utf-8',
+        success: function(result) {
+          // Handle or verify the server response if necessary.
+          if (result) {
+            $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+            setTimeout(function() {
+              window.location.href = "/watchlist";
+            }, 4000);
+          } else if (authResult['error']) {
+            console.log('There was an error: ' + authResult['error']);
+          } else {
+            $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+          }
+        }
+      }); 
+    } 
+  }
+  </script>
+  <!--END GOOGLE PLUS SIGN IN -->
+
+  <!--FACEBOOK SIGN IN -->
+  <script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '671617663192506',
+      cookie     : true,  // enable cookies to allow the server to access
+      xfbml      : true,  // parse social plugins on this page
+      version    : 'v2.8' // use version 2.8
+    });
+
+    FB.AppEvents.logPageView(); 
+
+  };
+
+  // Load the SDK asynchronously
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "https://connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
+  let accessToken;
+  function sendTokenToServer() {
+    FB.getLoginStatus(function(response) {
+      if (response.status === 'connected') {
+        accessToken = response.authResponse.accessToken;
+        console.log('Access Token retreived: ', accessToken);
+        console.log('Welcome!  Fetching your information.... ');
+
+        FB.api('/me', function(response) {
+          console.log('Successful login for: ' + response.name);
+          if (accessToken != undefined) {
+            console.log('Access Token is ', accessToken);
+            $.ajax({
+              type: 'POST',
+              url: '/fbconnect?state={{STATE}}',
+              processData: false,
+              data: accessToken,
+              contentType: 'application/octet-stream; charset=utf-8',
+              success: function(result) {
+                // Handle or verify the server response if necessary.
+                if (result) {
+                  $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+                  setTimeout(function() {
+                    window.location.href = "/watchlist";
+                  }, 4000);
+                } else {
+                  $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+                }
+              }
+            });
+          } else {
+            console.error("Invalid or undefined access token");
+          }
+        });
+      }
+    });
+  }
+  </script>
+  <div class="fb-style">
+    <button class="fb-icon">
+      <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
+        <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
+      </fb:login-button>
+    </button>
+  </div>
+</div>
+<!--END FACEBOOK SIGN IN -->
+
+  </body>
+</html>
+{% endblock %}
