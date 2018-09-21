@@ -66,7 +66,6 @@ def fbconnect():
 
     url = ("https://graph.facebook.com/v2.8/me?"
            "access_token=%s&fields=name,id,email") % access_token
-    print(url)
     h = httplib2.Http()
     result = h.request(url, 'GET')[1]
     data = json.loads(result)
@@ -167,7 +166,6 @@ def gconnect():
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
             ("Token's client ID does not match app's.", 401))
-        print ("Token's client ID does not match app's.")
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -213,7 +211,6 @@ def gconnect():
                     -webkit-border-radius: 150px;
                     -moz-border-radius: 150px;"> """
     flash("you are now logged in as %s" % login_session['username'])
-    print ("done!")
     return output
 
 
@@ -550,4 +547,4 @@ def disconnect():
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run()
+    app.run(debug=True)
