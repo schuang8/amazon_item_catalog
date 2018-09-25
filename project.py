@@ -12,8 +12,10 @@ import httplib2
 import json
 from flask import make_response
 import requests
+import os
 
 app = Flask(__name__)
+app.secret_key = 'super_secret_key'
 
 
 CLIENT_ID = json.loads(
@@ -545,6 +547,7 @@ def disconnect():
 
 
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
+    #app.secret_key = os.urandom(24)
+    app.config['SESSION_TYPE'] = 'filesystem'
     app.debug = True
-    app.run(debug=True)
+    app.run()
